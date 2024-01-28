@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: dapp
+  name: dapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: dapp
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.network/docker-ethereum-default: "true"
+        io.kompose.service: dapp
+    spec:
+      containers:
+        - image: docker-ethereum-dapp:latest
+          name: dapp
+          ports:
+            - containerPort: 4000
+              protocol: TCP
+          env:
+              - name: MONGODB_URI
+                value: mongodb://mongodb-service:27017
+              - name: DB_NAME
+                value: TestDB
+              - name: DB_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: mongodb-secret
+                    key: username
+              - name: DB_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: mongodb-secret
+                    key: password
+      restartPolicy: Always

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: react
+  name: react
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: react
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.network/docker-ethereum-default: "true"
+        io.kompose.service: react
+    spec:
+      containers:
+        - image: docker-ethereum-react:latest
+          name: react
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
